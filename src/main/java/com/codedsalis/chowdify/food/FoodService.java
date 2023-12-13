@@ -32,6 +32,10 @@ public class FoodService {
         return foodRepository.findAll();
     }
 
+    public  Optional<Food> findById(Long foodId) {
+         return foodRepository.findById(foodId);
+    }
+
     public Food saveFood(CreateFoodRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
