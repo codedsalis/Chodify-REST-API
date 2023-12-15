@@ -28,7 +28,13 @@ public class FoodController {
     public ResponseEntity<ChowdifyResponse> getAllFoods() {
         List<Food> foods = foodService.getFoods();
 
-        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder().status("success").data(foods).build();
+        HashMap<String, List<Food>> data = new HashMap<>();
+        data.put("foods", foods);
+
+        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder()
+                .status("success")
+                .data(data)
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(chowdifyResponse);
     }
@@ -37,7 +43,13 @@ public class FoodController {
     public ResponseEntity<ChowdifyResponse> storeFood(@Valid @RequestBody CreateFoodRequest request) {
         Food createdFood = this.foodService.saveFood(request);
 
-        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder().data(createdFood).build();
+        HashMap<String, Food> data = new HashMap<>();
+        data.put("food", createdFood);
+
+        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder()
+                .status("success")
+                .data(data)
+                .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(chowdifyResponse);
     }
@@ -46,12 +58,24 @@ public class FoodController {
     public ResponseEntity<ChowdifyResponse> getFood(@PathVariable Long id) {
         Optional<Food> food = foodService.findById(id);
 
+        HashMap<String, Optional<Food>> foodData = new HashMap<>();
+        foodData.put("food", food);
+
+        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder()
+                .status("success")
+                .data(foodData)
+                .build();
+
         if (food.isEmpty()) {
-            ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder().status("failed").data("Food not found").build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(chowdifyResponse);
+            HashMap<String, String> error = new HashMap<>();
+            error.put("message", "Food not found");
+
+            chowdifyResponse = ChowdifyResponse.builder()
+                    .status("failed")
+                    .data(error)
+                    .build();
         }
 
-        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder().status("success").data(food).build();
         return ResponseEntity.status(HttpStatus.OK).body(chowdifyResponse);
     }
 
