@@ -24,6 +24,7 @@ public class FoodController {
         this.foodService = foodService;
     }
 
+
     @GetMapping
     public ResponseEntity<ChowdifyResponse> getAllFoods() {
         List<Food> foods = foodService.getFoods();
