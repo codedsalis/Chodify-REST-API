@@ -25,5 +25,8 @@ public class Food extends BaseEntity {
     @Column(nullable = false)
     private Integer price;
 
+    @Column()
+    private String image;
+
     private String category;
 }
