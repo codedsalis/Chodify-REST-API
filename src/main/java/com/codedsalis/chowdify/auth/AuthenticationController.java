@@ -2,6 +2,7 @@ package com.codedsalis.chowdify.auth;
 
 import com.codedsalis.chowdify.auth.request.LoginRequest;
 import com.codedsalis.chowdify.auth.response.AuthenticationResponse;
+import com.codedsalis.chowdify.shared.BaseController;
 import com.codedsalis.chowdify.user.User;
 import com.codedsalis.chowdify.user.UserService;
 import com.codedsalis.chowdify.auth.request.UserRegistrationRequest;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-public class AuthenticationController {
+public class AuthenticationController extends BaseController {
 
     private final AuthenticationService authenticationService;
 
@@ -42,14 +43,5 @@ public class AuthenticationController {
     public ResponseEntity<?> authenticate(@RequestBody @Valid LoginRequest request) {
         AuthenticationResponse response = this.authenticationService.authenticate(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
-        return errors;
     }
 }
