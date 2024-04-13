@@ -1,22 +1,23 @@
 package com.codedsalis.chowdify.food;
 
 import com.codedsalis.chowdify.food.request.CreateFoodRequest;
+import com.codedsalis.chowdify.food.request.UpdateFoodRequest;
+import com.codedsalis.chowdify.shared.BaseController;
 import com.codedsalis.chowdify.shared.ChowdifyResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
-@RestController
-@RequestMapping("/api/v1/food")
-public class FoodController {
+@RestController()
+@RequestMapping("api/v1/food")
+public class FoodController extends BaseController {
     private final FoodService foodService;
 
     @Autowired
@@ -26,6 +27,7 @@ public class FoodController {
 
 
     @GetMapping
+//    @PreAuthorize("hasRole('user:read')")
     public ResponseEntity<ChowdifyResponse> getAllFoods() {
         List<Food> foods = foodService.getFoods();
 
@@ -56,7 +58,7 @@ public class FoodController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ChowdifyResponse> getFood(@PathVariable Long id) {
+    public ResponseEntity<ChowdifyResponse> getFood(@PathVariable UUID id) {
         Optional<Food> food = foodService.findById(id);
 
         HashMap<String, Optional<Food>> foodData = new HashMap<>();
@@ -80,12 +82,18 @@ public class FoodController {
         return ResponseEntity.status(HttpStatus.OK).body(chowdifyResponse);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
-        return errors;
+    @PutMapping("/{id}")
+    public ResponseEntity<ChowdifyResponse> updateFood(@PathVariable UUID id,  @Valid @RequestBody UpdateFoodRequest request) throws Exception {
+        Food food = foodService.updateFood(id, request);
+
+        HashMap<String, Food> foodData = new HashMap<>();
+        foodData.put("food", food);
+
+        ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder()
+            .status("success")
+            .data(foodData)
+            .build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(chowdifyResponse);
     }
 }

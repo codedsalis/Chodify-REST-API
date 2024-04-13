@@ -1,6 +1,7 @@
 package com.codedsalis.chowdify.food;
 
 import com.codedsalis.chowdify.food.request.CreateFoodRequest;
+import com.codedsalis.chowdify.food.request.UpdateFoodRequest;
 import com.codedsalis.chowdify.user.User;
 import com.codedsalis.chowdify.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -32,7 +34,7 @@ public class FoodService {
         return foodRepository.findAll();
     }
 
-    public  Optional<Food> findById(Long foodId) {
+    public  Optional<Food> findById(UUID foodId) {
          return foodRepository.findById(foodId);
     }
 
@@ -63,5 +65,17 @@ public class FoodService {
         } else {
             throw new RuntimeException("Authentication principal is not an instance of UserDetails");
         }
+    }
+
+    public Food updateFood(UUID foodId, UpdateFoodRequest request) throws Exception {
+        Food food = foodRepository.findById(foodId).orElseThrow(() -> new Exception("The requested food is not found"));
+
+        food.setName(request.name());
+        food.setPrice(Integer.valueOf(request.price()));
+        food.setCategory(request.category());
+        food.setImage(request.image());
+
+        foodRepository.save(food);
+        return food;
     }
 }
