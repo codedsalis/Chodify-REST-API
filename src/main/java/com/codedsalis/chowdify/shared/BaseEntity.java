@@ -19,8 +19,8 @@ public class BaseEntity implements Serializable {
     protected UUID id;
 
     @CreationTimestamp
-    protected Timestamp created_at;
+    protected Timestamp createdAt;
 
     @UpdateTimestamp
-    protected Timestamp updated_at;
+    protected Timestamp updatedAt;
 }

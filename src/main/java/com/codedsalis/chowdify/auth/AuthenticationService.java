@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,18 +22,21 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     @Autowired
     public  AuthenticationService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            AuthenticationManager authenticationManager
+            AuthenticationManager authenticationManager,
+            RefreshTokenService refreshTokenService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public AuthenticationResponse register(UserRegistrationRequest request) throws BadRequestException {
@@ -55,9 +55,11 @@ public class AuthenticationService {
         userRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.creaRefreshToken(user.getUsername());
 
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken.token)
                 .build();
     }
 
@@ -73,9 +75,13 @@ public class AuthenticationService {
 //                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String jwtToken = jwtService.generateToken(user);
+        
+        RefreshToken refreshToken = refreshTokenService.creaRefreshToken(user.getUsername());
+        
 
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken.token)
                 .build();
     }
 }

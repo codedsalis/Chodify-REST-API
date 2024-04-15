@@ -1,5 +1,7 @@
 package com.codedsalis.chowdify.auth.response;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,5 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
-    private String token;
+    private String accessToken;
+    private UUID refreshToken;
 }

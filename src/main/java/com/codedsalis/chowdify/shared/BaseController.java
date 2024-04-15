@@ -13,9 +13,12 @@ public class BaseController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ChowdifyResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        HashMap<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
+        HashMap<String, String> messages = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(message ->
+                messages.put(message.getField(), message.getDefaultMessage()));
+
+        HashMap<String, Object> errors = new HashMap<>();
+        errors.put("errors", messages);
 
         ChowdifyResponse chowdifyResponse = ChowdifyResponse.builder()
         .status("failed")
@@ -28,6 +31,7 @@ public class BaseController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<ChowdifyResponse> handleGenericExceptions(Exception ex) {
+
         HashMap<String, String> errors = new HashMap<>();
         errors.put("message", ex.getMessage());
 

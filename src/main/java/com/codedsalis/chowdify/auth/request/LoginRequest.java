@@ -9,9 +9,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LoginRequest {
-    @Email(message = "must be an email address")
+    @Email(message = "Email field must be a valid email address")
     @NotBlank(message = "Email cannot be empty")
-    @NotNull
+    @NotNull(message = "Email cannot be null")
     private String email;
 
     @NotNull
